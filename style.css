@@ -1,0 +1,541 @@
+// ==========================================
+// CAMPUSSHARE - LPU BORROW & SHARE
+// JavaScript Functionality
+// ==========================================
+
+// Sample campus items
+let items = [
+  {
+    id: 1,
+    name: "Scientific Calculator",
+    category: "Study",
+    condition: "Excellent",
+    description: "Casio scientific calculator. Perfect for engineering students.",
+    owner: "Aarav Sharma",
+    emoji: "🧮",
+    available: true
+  },
+  {
+    id: 2,
+    name: "Cricket Bat",
+    category: "Sports",
+    condition: "Good",
+    description: "English willow cricket bat available for weekend matches.",
+    owner: "Rahul Verma",
+    emoji: "🏏",
+    available: true
+  },
+  {
+    id: 3,
+    name: "Laptop Stand",
+    category: "Electronics",
+    condition: "Excellent",
+    description: "Adjustable laptop stand for comfortable studying.",
+    owner: "Priya Singh",
+    emoji: "💻",
+    available: true
+  },
+  {
+    id: 4,
+    name: "Novel Collection",
+    category: "Books",
+    condition: "Good",
+    description: "A collection of interesting novels available to borrow.",
+    owner: "Ananya Gupta",
+    emoji: "📚",
+    available: true
+  },
+  {
+    id: 5,
+    name: "Football",
+    category: "Sports",
+    condition: "Good",
+    description: "Football available for evening games.",
+    owner: "Karan Mehta",
+    emoji: "⚽",
+    available: true
+  },
+  {
+    id: 6,
+    name: "Headphones",
+    category: "Electronics",
+    condition: "Excellent",
+    description: "Wired headphones with clear sound quality.",
+    owner: "Rohan Das",
+    emoji: "🎧",
+    available: true
+  }
+];
+
+// Borrowing requests
+let requests = [];
+
+// Emoji based on category
+function getEmoji(category) {
+  const emojis = {
+    Study: "🧮",
+    Sports: "🏏",
+    Electronics: "💻",
+    Books: "📚",
+    Other: "🎁"
+  };
+
+  return emojis[category] || "📦";
+}
+
+// Get HTML element
+const getElement = (id) => document.getElementById(id);
+
+// ==========================================
+// DISPLAY ITEMS
+// ==========================================
+
+function displayItems(list = items) {
+  const container = getElement("itemsGrid");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const availableItems = list.filter(item => item.available);
+
+  if (availableItems.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>No items found!</h3>
+        <p>Try another search or add a new item.</p>
+      </div>
+    `;
+    return;
+  }
+
+  availableItems.forEach(item => {
+    const card = document.createElement("article");
+
+    card.className = "item-card";
+
+    card.innerHTML = `
+      <div class="item-image">
+        <span class="item-category">${item.category}</span>
+        <span>${item.emoji}</span>
+      </div>
+
+      <div class="item-details">
+        <h3>${escapeHTML(item.name)}</h3>
+
+        <p class="item-description">
+          ${escapeHTML(item.description)}
+        </p>
+
+        <div class="item-meta">
+          <span>👤 <span class="item-owner">
+            ${escapeHTML(item.owner)}
+          </span></span>
+
+          <span>${escapeHTML(item.condition)}</span>
+        </div>
+
+        <button class="borrow-btn" data-item-id="${item.id}">
+          Request to Borrow →
+        </button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// Prevent user-entered text from being interpreted as HTML
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, character => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    };
+
+    return entities[character];
+  });
+}
+
+// ==========================================
+// SEARCH AND FILTER
+// ==========================================
+
+function filterItems() {
+  const searchInput = getElement("searchInput");
+  const categoryFilter = getElement("categoryFilter");
+  const sortFilter = getElement("sortFilter");
+
+  const searchText = searchInput
+    ? searchInput.value.toLowerCase().trim()
+    : "";
+
+  const category = categoryFilter
+    ? categoryFilter.value
+    : "All";
+
+  let filtered = items.filter(item => {
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchText) ||
+      item.description.toLowerCase().includes(searchText) ||
+      item.category.toLowerCase().includes(searchText);
+
+    const matchesCategory =
+      category === "All" || item.category === category;
+
+    return item.available && matchesSearch && matchesCategory;
+  });
+
+  if (sortFilter && sortFilter.value === "name") {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (sortFilter && sortFilter.value === "category") {
+    filtered.sort((a, b) => a.category.localeCompare(b.category));
+  }
+
+  displayItems(filtered);
+}
+
+// ==========================================
+// ADD NEW ITEM
+// ==========================================
+
+function openAddItemModal() {
+  const dialog = getElement("addItemDialog");
+
+  if (dialog) dialog.showModal();
+}
+
+function closeAddItemModal() {
+  const dialog = getElement("addItemDialog");
+
+  if (dialog) dialog.close();
+}
+
+function addNewItem(event) {
+  event.preventDefault();
+
+  const name = getElement("itemName").value.trim();
+  const category = getElement("itemCategory").value;
+  const condition = getElement("itemCondition").value;
+  const description = getElement("itemDescription").value.trim();
+  const owner = getElement("ownerName").value.trim();
+
+  if (!name || !description || !owner) {
+    showToast("Please fill in all required fields.");
+    return;
+  }
+
+  const newItem = {
+    id: Date.now(),
+    name,
+    category,
+    condition,
+    description,
+    owner,
+    emoji: getEmoji(category),
+    available: true
+  };
+
+  items.unshift(newItem);
+
+  displayItems();
+  updateStatistics();
+
+  getElement("addItemForm").reset();
+  closeAddItemModal();
+
+  showToast("🎉 Your item has been listed successfully!");
+}
+
+// ==========================================
+// BORROW ITEM
+// ==========================================
+
+let selectedItemId = null;
+
+function openBorrowModal(itemId) {
+  const item = items.find(item => item.id === itemId);
+
+  if (!item) return;
+
+  selectedItemId = itemId;
+
+  const dialog = getElement("borrowDialog");
+
+  getElement("borrowItemTitle").textContent =
+    "Borrow: " + item.name;
+
+  dialog.showModal();
+}
+
+function closeBorrowModal() {
+  const dialog = getElement("borrowDialog");
+
+  if (dialog) dialog.close();
+
+  selectedItemId = null;
+}
+
+function submitBorrowRequest(event) {
+  event.preventDefault();
+
+  const borrowerName = getElement("borrowerName").value.trim();
+  const startDate = getElement("borrowStartDate").value;
+  const endDate = getElement("borrowEndDate").value;
+  const message = getElement("borrowMessage").value.trim();
+
+  if (!borrowerName || !startDate || !endDate) {
+    showToast("Please complete all required fields.");
+    return;
+  }
+
+  if (new Date(endDate) < new Date(startDate)) {
+    showToast("Return date cannot be before the start date.");
+    return;
+  }
+
+  const item = items.find(item => item.id === selectedItemId);
+
+  if (!item || !item.available) {
+    showToast("Sorry, this item is no longer available.");
+    closeBorrowModal();
+    return;
+  }
+
+  const request = {
+    id: Date.now(),
+    itemId: item.id,
+    itemName: item.name,
+    borrowerName,
+    startDate,
+    endDate,
+    message,
+    status: "Pending"
+  };
+
+  requests.unshift(request);
+
+  renderRequests();
+
+  getElement("borrowForm").reset();
+  closeBorrowModal();
+
+  showToast("✅ Borrow request submitted successfully!");
+}
+
+// ==========================================
+// DISPLAY BORROWING REQUESTS
+// ==========================================
+
+function renderRequests() {
+  const container = getElement("requestsList");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (requests.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>No borrowing requests yet</h3>
+        <p>Your requests will appear here.</p>
+      </div>
+    `;
+    return;
+  }
+
+  requests.forEach(request => {
+    const card = document.createElement("div");
+
+    card.className = "request-card";
+
+    const statusClass =
+      request.status.toLowerCase();
+
+    card.innerHTML = `
+      <div class="request-info">
+        <h3>${escapeHTML(request.itemName)}</h3>
+
+        <p>
+          Requested by ${escapeHTML(request.borrowerName)}
+        </p>
+
+        <p>
+          ${escapeHTML(request.startDate)}
+          → ${escapeHTML(request.endDate)}
+        </p>
+
+        <p>${escapeHTML(request.message || "No additional message")}</p>
+      </div>
+
+      <div>
+        <span class="request-status ${statusClass}">
+          ${escapeHTML(request.status)}
+        </span>
+
+        <button
+          class="cancel-btn"
+          data-request-id="${request.id}"
+          style="margin-left: 8px;"
+        >
+          Cancel
+        </button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// ==========================================
+// CANCEL REQUEST
+// ==========================================
+
+function cancelRequest(requestId) {
+  requests = requests.filter(
+    request => request.id !== requestId
+  );
+
+  renderRequests();
+
+  showToast("Request cancelled.");
+}
+
+// ==========================================
+// STATISTICS
+// ==========================================
+
+function updateStatistics() {
+  const totalItems = getElement("totalItems");
+  const totalRequests = getElement("totalRequests");
+
+  if (totalItems) {
+    totalItems.textContent = items.length;
+  }
+
+  if (totalRequests) {
+    totalRequests.textContent = requests.length;
+  }
+}
+
+// ==========================================
+// TOAST NOTIFICATIONS
+// ==========================================
+
+let toastTimeout;
+
+function showToast(message) {
+  const toast = getElement("toast");
+
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimeout);
+
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+// ==========================================
+// EVENT LISTENERS
+// ==========================================
+
+// Search
+if (getElement("searchInput")) {
+  getElement("searchInput").addEventListener(
+    "input",
+    filterItems
+  );
+}
+
+// Category filter
+if (getElement("categoryFilter")) {
+  getElement("categoryFilter").addEventListener(
+    "change",
+    filterItems
+  );
+}
+
+// Sorting
+if (getElement("sortFilter")) {
+  getElement("sortFilter").addEventListener(
+    "change",
+    filterItems
+  );
+}
+
+// Add item button
+if (getElement("openAddItem")) {
+  getElement("openAddItem").addEventListener(
+    "click",
+    openAddItemModal
+  );
+}
+
+// Add item form
+if (getElement("addItemForm")) {
+  getElement("addItemForm").addEventListener(
+    "submit",
+    addNewItem
+  );
+}
+
+// Borrow form
+if (getElement("borrowForm")) {
+  getElement("borrowForm").addEventListener(
+    "submit",
+    submitBorrowRequest
+  );
+}
+
+// Close buttons
+if (getElement("closeAddItem")) {
+  getElement("closeAddItem").addEventListener(
+    "click",
+    closeAddItemModal
+  );
+}
+
+if (getElement("closeBorrow")) {
+  getElement("closeBorrow").addEventListener(
+    "click",
+    closeBorrowModal
+  );
+}
+
+// Event delegation for dynamically created buttons
+document.addEventListener("click", function(event) {
+  const borrowButton = event.target.closest(".borrow-btn");
+
+  if (borrowButton) {
+    openBorrowModal(Number(borrowButton.dataset.itemId));
+  }
+
+  const cancelButton = event.target.closest(".cancel-btn");
+
+  if (cancelButton) {
+    cancelRequest(Number(cancelButton.dataset.requestId));
+  }
+});
+
+// ==========================================
+// INITIALIZE WEBSITE
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", function() {
+  displayItems();
+  renderRequests();
+  updateStatistics();
+});
+
+displayItems();
+renderRequests();
+updateStatistics();
