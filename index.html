@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusShare | LPU Borrow & Share</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <header class="topbar">
+        <a class="brand" href="#">
+            <span class="brand-icon">C</span>
+            <span>Campus<span class="brand-accent">Share</span>
+                <small>LPU STUDENT COMMUNITY</small>
+            </span>
+        </a>
+
+        <nav>
+            <a href="#explore">Explore</a>
+            <a href="#how">How it works</a>
+            <button class="btn btn-outline" id="myRequestsBtn">
+                My Requests <span id="requestCount">0</span>
+            </button>
+            <button class="btn btn-primary" id="listTopBtn">
+                + List an Item
+            </button>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">THE CAMPUS SHARING COMMUNITY</span>
+
+                <h1>
+                    Need it today?<br>
+                    <span>Borrow it nearby.</span>
+                </h1>
+
+                <p>
+                    Share what you have. Borrow what you need.
+                    A smarter, more helpful campus starts with us.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="btn btn-light" href="#explore">
+                        Explore Items →
+                    </a>
+
+                    <button class="btn btn-glass" id="heroListBtn">
+                        Share an Item
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero-art">
+                <div class="big-circle">
+                    <div class="bag">🎒</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="stats-strip">
+            <div>
+                <strong id="itemTotal">0</strong>
+                <span>Items Listed</span>
+            </div>
+
+            <div>
+                <strong>5</strong>
+                <span>Categories</span>
+            </div>
+
+            <div>
+                <strong>100%</strong>
+                <span>Campus Spirit</span>
+            </div>
+
+            <div class="free-note">
+                ♡ <span>Sharing makes campus life easier</span>
+            </div>
+        </section>
+
+        <!-- Explore Items -->
+        <section class="section" id="explore">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">FIND YOUR NEXT ESSENTIAL</span>
+                    <h2>Explore Available Items</h2>
+                    <p>Borrow something useful from another student.</p>
+                </div>
+
+                <button class="btn btn-primary" id="listSectionBtn">
+                    + List Your Item
+                </button>
+            </div>
+
+            <div class="toolbar">
+                <label class="searchbox">
+                    <span>⌕</span>
+                    <input
+                        id="searchInput"
+                        type="search"
+                        placeholder="Search laptop, calculator, books..."
+                    >
+                </label>
+
+                <select id="categoryFilter">
+                    <option value="All">All Categories</option>
+                    <option>Electronics</option>
+                    <option>Study</option>
+                    <option>Daily Essentials</option>
+                    <option>Sports</option>
+                    <option>Other</option>
+                </select>
+
+                <select id="sortFilter">
+                    <option value="newest">Recently Added</option>
+                    <option value="az">Name: A to Z</option>
+                </select>
+            </div>
+
+            <div id="itemsGrid" class="items-grid"></div>
+
+            <p id="emptyState" class="empty hidden">
+                No items found. Try another search.
+            </p>
+
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-section" id="how">
+
+            <div class="section-heading centered">
+                <div>
+                    <span class="eyebrow">SIMPLE. SAFE. STUDENT-POWERED.</span>
+                    <h2>How CampusShare Works</h2>
+                    <p>Three easy steps to make sharing part of campus life.</p>
+                </div>
+            </div>
+
+            <div class="steps">
+
+                <article>
+                    <div class="step-icon">🔎</div>
+                    <span>01</span>
+                    <h3>Find What You Need</h3>
+                    <p>
+                        Search by item name or category and discover
+                        what's available around campus.
+                    </p>
+                </article>
+
+                <article>
+                    <div class="step-icon">🤝</div>
+                    <span>02</span>
+                    <h3>Send a Request</h3>
+                    <p>
+                        Choose your borrowing dates and send
+                        a request to the student.
+                    </p>
+                </article>
+
+                <article>
+                    <div class="step-icon">🎉</div>
+                    <span>03</span>
+                    <h3>Borrow & Return</h3>
+                    <p>
+                        Coordinate the handover, use the item
+                        responsibly and return it on time.
+                    </p>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- Borrowing Requests -->
+        <section class="management-section" id="myArea">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">YOUR CAMPUS ACTIVITY</span>
+                    <h2>My Borrowing Requests</h2>
+                    <p>Track the requests you've sent.</p>
+                </div>
+            </div>
+
+            <div id="requestsList" class="requests-list">
+                <div class="empty">
+                    You haven't sent any requests yet.
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <a class="brand footer-brand" href="#">
+            <span class="brand-icon">C</span>
+            <span>Campus<span class="brand-accent">Share</span>
+                <small>LPU STUDENT COMMUNITY</small>
+            </span>
+        </a>
+
+        <p>A student-to-student sharing platform.</p>
+
+        <span>© 2026 CampusShare</span>
+    </footer>
+
+    <!-- List Item Popup -->
+    <dialog id="listDialog">
+
+        <form id="listForm" class="modal-form">
+
+            <div class="modal-head">
+                <div>
+                    <span class="eyebrow">SHARE YOUR ITEM</span>
+                    <h2>List an Item</h2>
+                </div>
+
+                <button type="button" class="close-btn"
+                    data-close="listDialog">×</button>
+            </div>
+
+            <label>
+                Item Name
+                <input name="name" required
+                    placeholder="e.g. Scientific Calculator">
+            </label>
+
+            <div class="form-row">
+
+                <label>
+                    Category
+                    <select name="category">
+                        <option>Electronics</option>
+                        <option>Study</option>
+                        <option>Daily Essentials</option>
+                        <option>Sports</option>
+                        <option>Other</option>
+                    </select>
+                </label>
+
+                <label>
+                    Condition
+                    <select name="condition">
+                        <option>Like new</option>
+                        <option>Good</option>
+                        <option>Used</option>
+                    </select>
+                </label>
+
+            </div>
+
+            <label>
+                Description
+                <textarea name="description" required
+                    placeholder="Describe your item"></textarea>
+            </label>
+
+            <div class="form-row">
+
+                <label>
+                    Available From
+                    <input name="from" type="date" required>
+                </label>
+
+                <label>
+                    Available Until
+                    <input name="until" type="date" required>
+                </label>
+
+            </div>
+
+            <label>
+                Your Name
+                <input name="owner" required placeholder="Your name">
+            </label>
+
+            <button class="btn btn-primary full-btn" type="submit">
+                Publish Listing
+            </button>
+
+        </form>
+    </dialog>
+
+    <!-- Borrow Item Popup -->
+    <dialog id="borrowDialog">
+
+        <form id="borrowForm" class="modal-form">
+
+            <div class="modal-head">
+                <div>
+                    <span class="eyebrow">REQUEST AN ITEM</span>
+                    <h2 id="borrowTitle">Borrow Item</h2>
+                </div>
+
+                <button type="button" class="close-btn"
+                    data-close="borrowDialog">×</button>
+            </div>
+
+            <input type="hidden" name="itemId">
+
+            <label>
+                Your Name
+                <input name="borrower" required placeholder="Your name">
+            </label>
+
+            <div class="form-row">
+
+                <label>
+                    Borrow From
+                    <input name="from" type="date" required>
+                </label>
+
+                <label>
+                    Return By
+                    <input name="until" type="date" required>
+                </label>
+
+            </div>
+
+            <label>
+                Message to Owner
+                <textarea name="message"
+                    placeholder="Hi! I need this item for my class..."></textarea>
+            </label>
+
+            <button class="btn btn-primary full-btn" type="submit">
+                Send Borrowing Request
+            </button>
+
+        </form>
+
+    </dialog>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>
